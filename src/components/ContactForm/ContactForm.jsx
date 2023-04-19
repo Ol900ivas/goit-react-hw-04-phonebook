@@ -1,76 +1,87 @@
 import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
 
-import { Component } from 'react';
+import { useState } from 'react';
 import { InputWrap, Label, Input, FormBtn } from './ContactForm.styled';
 
-export class ContactForm extends Component {
-  state = {
-    name: '',
-    number: '',
+export const ContactForm = ({ submit }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
+  const nameInputId = nanoid();
+  const numberInputId = nanoid();
+
+  const handleChange = event => {
+    const { name, value } = event.target;
+
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+
+      case 'number':
+        setNumber(value);
+        break;
+
+      default:
+        return;
+    }
   };
 
-  nameInputId = nanoid();
-  numberInputId = nanoid();
-
-  handleChange = event => {
-    const { name, value } = event.currentTarget;
-    this.setState({ [name]: value });
-  };
-
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    this.props.submit(this.state);
 
-    this.reset();
+    const data = {
+      name,
+      number,
+    };
+
+    submit(data);
+    reset();
   };
 
-  reset = () => {
-    this.setState({ name: '', number: '' });
+  const reset = () => {
+    setName('');
+    setNumber('');
   };
 
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <InputWrap>
-          <Label htmlFor={this.nameInputId}>Name</Label>
-          <Input
-            type="text"
-            name="name"
-            id={this.nameInputId}
-            value={this.state.name}
-            placeholder="Sergiy Petrenko"
-            onChange={this.handleChange}
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-            required
-          />
-        </InputWrap>
-        <InputWrap>
-          <Label htmlFor={this.numberInputId}>Number</Label>
-          <Input
-            type="tel"
-            name="number"
-            id={this.numberInputId}
-            value={this.state.number}
-            placeholder="123-45-67"
-            onChange={this.handleChange}
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-            required
-          />
-        </InputWrap>
+  return (
+    <form onSubmit={handleSubmit}>
+      <InputWrap>
+        <Label htmlFor={nameInputId}>Name</Label>
+        <Input
+          type="text"
+          name="name"
+          id={nameInputId}
+          value={name}
+          placeholder="Sergiy Petrenko"
+          onChange={handleChange}
+          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          required
+        />
+      </InputWrap>
+      <InputWrap>
+        <Label htmlFor={numberInputId}>Number</Label>
+        <Input
+          type="tel"
+          name="number"
+          id={numberInputId}
+          value={number}
+          placeholder="123-45-67"
+          onChange={handleChange}
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+          required
+        />
+      </InputWrap>
 
-        <FormBtn
-          type="submit"
-          disabled={!this.state.name || !this.state.number}
-        >
-          Add contact
-        </FormBtn>
-      </form>
-    );
-  }
-}
+      <FormBtn type="submit" disabled={!name || !number}>
+        Add contact
+      </FormBtn>
+    </form>
+  );
+};
 
 ContactForm.propTypes = {
   submit: PropTypes.func.isRequired,
